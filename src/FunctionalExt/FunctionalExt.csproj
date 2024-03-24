@@ -4,6 +4,16 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>PG.FunctionalExt</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Pablo Gonzalez</Authors>
+    <Product>PG.FunctionalExt</Product>
+    <PackageTags>Option;Result;Functional Programming</PackageTags>
+    <IsPackable>true</IsPackable>
+    <Description>
+      This package contains implementations of the Option monad and the
+      Result.
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>
