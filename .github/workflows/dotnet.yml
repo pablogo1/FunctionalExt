@@ -29,4 +29,4 @@ jobs:
     - name: Package
       run: dotnet pack -c Release src/FunctionalExt
     - name: Publish to nuget
-      run: dotnet nuget push src/FunctionalExt/bin/Release/*.nupkg
+      run: dotnet nuget push src/FunctionalExt/bin/Release/net8.0/*.nupkg
