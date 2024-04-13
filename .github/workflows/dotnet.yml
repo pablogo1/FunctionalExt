@@ -29,4 +29,4 @@ jobs:
     - name: Package
       run: dotnet pack -c Release src/FunctionalExt
     - name: Publish to nuget
-      run: dotnet nuget push src/FunctionalExt/bin/Release/net8.0/*.nupkg
+      run: dotnet nuget push src/FunctionalExt/bin/Release/net8.0/*.nupkg --api-key ${{secrets.NUGET_GITHUB}} --source https://api.nuget.org/v3/index.json
