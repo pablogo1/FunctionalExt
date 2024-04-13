@@ -27,4 +27,6 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal -c Release
     - name: Package
-      run: dotnet pack
+      run: dotnet pack -c Release src/FunctionalExt
+    - name: Publish to nuget
+      run: dotnet nuget push src/FunctionalExt/bin/Release/*.nupkg
