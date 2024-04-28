@@ -1,6 +1,6 @@
 ﻿namespace FunctionalExt.Tests;
 
-using static FunctionalHelper;
+using static Functions;
 
 public class MapTests
 {

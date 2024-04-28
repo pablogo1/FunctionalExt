@@ -1,6 +1,6 @@
 namespace FunctionalExt.Tests;
 
-using static FunctionalHelper;
+using static Functions;
 
 public class BindTests
 {
@@ -26,7 +26,7 @@ public class BindTests
     {
         Option<string> option = None<string>();
 
-        var result = option.Bind(str => Some(str.Length));
+        var result = option.Bind(str => Some(str.Length)); 
 
         result.Should().BeOfType<Option<int>>();
         result.IsSome.Should().BeFalse();

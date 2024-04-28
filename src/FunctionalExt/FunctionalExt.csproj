@@ -8,6 +8,7 @@
     <Version>0.1.0</Version>
     <Authors>Pablo Gonzalez</Authors>
     <Product>PG.FunctionalExt</Product>
+    <PackageReadmeFile>../../README.md</PackageReadmeFile>
     <PackageTags>Option;Result;Functional Programming</PackageTags>
     <IsPackable>true</IsPackable>
     <Description>

@@ -1,6 +1,6 @@
 namespace FunctionalExt.Tests.Option.FunctionalHelper;
 
-using static FunctionalExt.FunctionalHelper;
+using static FunctionalExt.Functions;
 
 public class NoneTests
 {

@@ -20,4 +20,14 @@ public class SomeTests
         option.Value.Should().Be(number);
         option.IsSome.Should().BeTrue();
     }
+
+    [Fact]
+    public void Should_throw_exception_given_a_null_value()
+    {
+        string? nullString = null;
+
+#pragma warning disable CS8604 // Possible null reference argument.
+        Assert.Throws<ArgumentNullException>(() => _ = Option<string>.Some(nullString));
+#pragma warning restore CS8604 // Possible null reference argument.
+    }
 }
