@@ -1,0 +1,7 @@
+{
+    "testExplorer.codeLens": true,
+    "testExplorer.useNativeTesting": false,
+    "testExplorer.showOnRun": true,
+    "testExplorer.addToEditorContextMenu": true,
+    "testExplorer.errorDecoration": true,
+}
