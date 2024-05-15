@@ -1,21 +1,15 @@
-﻿using System.Reflection;
-using System.Runtime;
-
-namespace FunctionalExt;
-
-public record Error(string Code, string Message) : IError;
-public interface IError {}
-
-enum ResultState
-{
-    Undefined,
-    Success,
-    Faulted
-}
+﻿namespace FunctionalExt;
 
 public readonly record struct Result<T, TError>
     where TError : IError
 {
+    private enum ResultState
+    {
+        Undefined,
+        Success,
+        Faulted
+    }
+
     private readonly ResultState _resultState = ResultState.Undefined;
     internal readonly bool IsUndefined => _resultState == ResultState.Undefined;
     internal readonly bool IsSuccess => _resultState == ResultState.Success;
