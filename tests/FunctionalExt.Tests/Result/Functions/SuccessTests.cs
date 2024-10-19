@@ -9,7 +9,7 @@ public class SuccessTests
     {
         var result = Success("test");
 
-        result.Should().BeOfType<Result<string, Error>>();
+        result.Should().BeOfType<Result<string>>();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be("test");
     }

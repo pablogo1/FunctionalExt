@@ -5,10 +5,10 @@ public class CreateTests
     [Fact]
     public void Should_not_return_an_undefined_result()
     {
-        Error error = new("ErrorCode", "Message");
+        Error error = new GenericError("ErrorCode", "Message");
 
-        var successResult = Result<string, Error>.Create("test");
-        var failedResult = Result<string, Error>.Create(error);
+        var successResult = Result<string>.Create("test");
+        var failedResult = Result<string>.Create(error);
 
         successResult.IsUndefined.Should().BeFalse();
         failedResult.IsUndefined.Should().BeFalse();
@@ -18,7 +18,7 @@ public class CreateTests
     public void Should_create_result_as_success_given_a_value()
     {
         const string expectedString = "test";
-        var result = Result<string, Error>.Create(expectedString);
+        var result = Result<string>.Create(expectedString);
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(expectedString);
@@ -27,9 +27,9 @@ public class CreateTests
     [Fact]
     public void Should_create_result_as_failure_when_given_an_error()
     {
-        Error error = new("ErrorCode", "Message");
+        Error error = new GenericError("ErrorCode", "Message");
         
-        var result = Result<string, Error>.Create(error);
+        var result = Result<string>.Create(error);
 
         result.IsSuccess.Should().BeFalse();
         result.Value.Should().BeNull();

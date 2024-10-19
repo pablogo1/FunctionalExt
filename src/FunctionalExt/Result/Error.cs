@@ -1,3 +1,3 @@
 namespace FunctionalExt;
 
-public record Error(string Code, string Message) : IError;
+public abstract record Error();
