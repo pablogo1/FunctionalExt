@@ -15,4 +15,11 @@ public static partial class ResultExtensions
             : result.IsSuccess
                 ? bindFn(result.Value!)
                 : Result<B>.Create(result.Error!);
+
+    public static B Match<A, B>(this Result<A> result, Func<A, B> succFn, Func<Error, B> errFn) =>
+        result.IsUndefined
+            ? throw new ResultUndefinedException()
+            : result.IsSuccess
+                ? succFn(result.Value!)
+                : errFn(result.Error!);
 }
