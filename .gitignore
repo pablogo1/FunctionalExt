@@ -399,3 +399,7 @@ FodyWeavers.xsd
 
 # Mono
 .mono/
+
+# DocFx
+_site/
+api/
