@@ -20,6 +20,17 @@ public static partial class ResultExtensions
                 : Result<B>.Create(result.Error!);
 
     /// <summary>
+    /// Map <seealso cref="ResultExtensions.Map{A, B}(Result{A}, Func{A, B})"/> for Task-based result.
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="B"></typeparam>
+    /// <param name="resultTask">The input task-based result.</param>
+    /// <param name="mapFn"></param>
+    /// <returns>A task-based result of type <typeparamref name="B"/>.</returns>
+    public static async Task<Result<B>> Map<A, B>(this Task<Result<A>> resultTask, Func<A, B> mapFn) =>
+        (await resultTask.ConfigureAwait(false)).Map(mapFn);
+
+    /// <summary>
     /// Given a successful input result, executes <paramref name="bindFn"/> function which takes unwrapped value of type A and returns a Result of type B.
     /// It returns a new failed Result wrapping the error wrapped on the input result.
     /// </summary>
