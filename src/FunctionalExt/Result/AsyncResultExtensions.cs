@@ -47,4 +47,12 @@ public static partial class AsyncResultExtensions
             : Result<B>.Create(result.Error!);
     }
         
+    public static async Task<Result<B>> BindAsync<A, B>(this Task<Result<A>> resultTask, Func<A, Result<B>> bindFn) =>
+        await resultTask.ConfigureAwait(false) switch {
+            { IsUndefined: false, IsSuccess: true } result => bindFn(result.Value!),
+            { IsUndefined: false, IsSuccess: false } result => Result<B>.Create(result.Error!),
+            { IsUndefined: true } => throw new ResultUndefinedException()
+        };
+
+    
 }
