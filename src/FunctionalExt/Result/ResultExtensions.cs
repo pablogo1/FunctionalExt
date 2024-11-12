@@ -65,23 +65,55 @@ public static partial class ResultExtensions
                 ? succFn(result.Value!)
                 : errFn(result.Error!);
 
+    /// <summary>
+    /// Given a faulted error, return the <paramref name="defaultValue"/>. Otherwise, it returns the
+    /// wrapped value.
+    /// </summary>
+    /// <typeparam name="A">The type of the wrapped value.</typeparam>
+    /// <param name="result">The input result.</param>
+    /// <param name="defaultValue">The default value to return in case of faulted result.</param>
+    /// <returns>An unwrapped instance of <typeparamref name="A"/>.</returns>
     public static A IfFail<A>(this Result<A> result, A defaultValue) => 
-        result.IsSuccess
-            ? result.Value!
-            : defaultValue;
-    public static A IfFail<A>(this Result<A> result, Func<A> defaultValueFn) => 
-        result.IsSuccess
-            ? result.Value!
-            : defaultValueFn();
-            
-    public static A IfFail<A>(this Result<A> result, Func<Error, A> failFn) => 
-        result.IsSuccess
-            ? result.Value!
-            : failFn(result.Error!);
+        result.IsFaulted
+            ? defaultValue
+            : result.Value!;
 
+    /// <summary>
+    /// Given a faulted error, return the object returned by <paramref name="defaultValueFn"/>. Otherwise,
+    /// it returns the wrapped value.
+    /// </summary>
+    /// <typeparam name="A">The type of the wrapped value.</typeparam>
+    /// <param name="result">The input result.</param>
+    /// <param name="defaultValueFn">The default value factory function.</param>
+    /// <returns>An unwrapped instance of <typeparamref name="A"/>.</returns>
+    public static A IfFail<A>(this Result<A> result, Func<A> defaultValueFn) => 
+        result.IsFaulted
+            ? defaultValueFn()
+            : result.Value!;
+            
+    /// <summary>
+    /// Given a faulted result, return the object return by <paramref name="failFn"/>. Otherwise, it returns the 
+    /// wrapped value.
+    /// </summary>
+    /// <typeparam name="A">The type of the wrapped value.</typeparam>
+    /// <param name="result">The input result.</param>
+    /// <param name="failFn">The default value factory function.</param>
+    /// <returns>An unwrapped instance of <typeparamref name="A"/>.</returns>
+    public static A IfFail<A>(this Result<A> result, Func<Error, A> failFn) => 
+        result.IsFaulted
+            ? failFn(result.Error!)
+            : result.Value!;
+
+    /// <summary>
+    /// Given a faulted result, execute the <paramref name="action"/> function.
+    /// </summary>
+    /// <typeparam name="A">The type of the wrapped value.</typeparam>
+    /// <param name="result">The input result.</param>
+    /// <param name="action">The action to execute.</param>
+    /// <returns>The default <see cref="Unit"/> instance.</returns>
     public static Unit IfFail<A>(this Result<A> result, Action<Error> action)
     {
-        if (!result.IsSuccess)
+        if (result.IsFaulted)
         {
             action(result.Error!);
         }

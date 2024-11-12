@@ -17,6 +17,7 @@ public readonly record struct Result<A>
     private readonly ResultState _resultState = ResultState.Undefined;
     internal readonly bool IsUndefined => _resultState == ResultState.Undefined;
     internal readonly bool IsSuccess => _resultState == ResultState.Success;
+    internal readonly bool IsFaulted => _resultState == ResultState.Faulted;
     internal readonly A? Value { get; init; } = default;
     internal readonly Error? Error { get; init;} = default;
 
