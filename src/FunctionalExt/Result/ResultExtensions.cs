@@ -74,9 +74,11 @@ public static partial class ResultExtensions
     /// <param name="defaultValue">The default value to return in case of faulted result.</param>
     /// <returns>An unwrapped instance of <typeparamref name="A"/>.</returns>
     public static A IfFail<A>(this Result<A> result, A defaultValue) => 
-        result.IsFaulted
-            ? defaultValue
-            : result.Value!;
+        result.IsUndefined
+            ? throw new ResultUndefinedException()
+            : result.IsFaulted
+                ? defaultValue
+                : result.Value!;
 
     /// <summary>
     /// Given a faulted error, return the object returned by <paramref name="defaultValueFn"/>. Otherwise,
@@ -87,9 +89,11 @@ public static partial class ResultExtensions
     /// <param name="defaultValueFn">The default value factory function.</param>
     /// <returns>An unwrapped instance of <typeparamref name="A"/>.</returns>
     public static A IfFail<A>(this Result<A> result, Func<A> defaultValueFn) => 
-        result.IsFaulted
-            ? defaultValueFn()
-            : result.Value!;
+        result.IsUndefined
+            ? throw new ResultUndefinedException()
+            : result.IsFaulted
+                ? defaultValueFn()
+                : result.Value!;
             
     /// <summary>
     /// Given a faulted result, return the object return by <paramref name="failFn"/>. Otherwise, it returns the 
@@ -100,9 +104,11 @@ public static partial class ResultExtensions
     /// <param name="failFn">The default value factory function.</param>
     /// <returns>An unwrapped instance of <typeparamref name="A"/>.</returns>
     public static A IfFail<A>(this Result<A> result, Func<Error, A> failFn) => 
-        result.IsFaulted
-            ? failFn(result.Error!)
-            : result.Value!;
+        result.IsUndefined
+            ? throw new ResultUndefinedException()
+            : result.IsFaulted
+                ? failFn(result.Error!)
+                : result.Value!;
 
     /// <summary>
     /// Given a faulted result, execute the <paramref name="action"/> function.
@@ -113,6 +119,11 @@ public static partial class ResultExtensions
     /// <returns>The default <see cref="Unit"/> instance.</returns>
     public static Unit IfFail<A>(this Result<A> result, Action<Error> action)
     {
+        if (result.IsUndefined)
+        {
+            throw new ResultUndefinedException();
+        }
+        
         if (result.IsFaulted)
         {
             action(result.Error!);

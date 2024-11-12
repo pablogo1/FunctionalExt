@@ -61,4 +61,25 @@ public class IfFailTests
             actual2.Should().NotBe(defaultValue);
         }
     }
+
+    public class GivenUndefinedResult
+    {
+        private readonly Result<string> _result = new();
+
+        [Fact]
+        public void Should_throw_ResultUndefinedException()
+        {
+            bool called = false;
+            void Callback(Error error)
+            {
+                called = true;
+            }
+
+            Assert.Throws<ResultUndefinedException>(() => _result.IfFail("test"));
+            Assert.Throws<ResultUndefinedException>(() => _result.IfFail(() => "test"));
+            Assert.Throws<ResultUndefinedException>(() => _result.IfFail(error => "test"));
+            Assert.Throws<ResultUndefinedException>(() => _result.IfFail(Callback));
+            called.Should().BeFalse();
+        }
+    }
 }
