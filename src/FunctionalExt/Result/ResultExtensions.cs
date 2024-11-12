@@ -64,4 +64,28 @@ public static partial class ResultExtensions
             : result.IsSuccess
                 ? succFn(result.Value!)
                 : errFn(result.Error!);
+
+    public static A IfFail<A>(this Result<A> result, A defaultValue) => 
+        result.IsSuccess
+            ? result.Value!
+            : defaultValue;
+    public static A IfFail<A>(this Result<A> result, Func<A> defaultValueFn) => 
+        result.IsSuccess
+            ? result.Value!
+            : defaultValueFn();
+            
+    public static A IfFail<A>(this Result<A> result, Func<Error, A> failFn) => 
+        result.IsSuccess
+            ? result.Value!
+            : failFn(result.Error!);
+
+    public static Unit IfFail<A>(this Result<A> result, Action<Error> action)
+    {
+        if (!result.IsSuccess)
+        {
+            action(result.Error!);
+        }
+
+        return Unit.Default;
+    }
 }
