@@ -1,5 +1,10 @@
 ﻿namespace FunctionalExt;
 
+/// <summary>
+/// The Result monad. This can be either a successful result, which wraps the value, or a failed result which
+/// wraps an <seealso cref="Error"/> instance.
+/// </summary>
+/// <typeparam name="A">The type of the wrapped value.</typeparam>
 public readonly record struct Result<A>
 {
     private enum ResultState

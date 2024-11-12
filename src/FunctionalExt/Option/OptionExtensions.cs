@@ -2,6 +2,14 @@ namespace FunctionalExt;
 
 public static class OptionExtensions
 {
+    /// <summary>
+    /// Executes the provided mapping function against the wrapped value if option is Some. Returns None if the input option is none.
+    /// </summary>
+    /// <typeparam name="T">The input option enclosed type.</typeparam>
+    /// <typeparam name="B">The output option enclosed type.</typeparam>
+    /// <param name="option">The input option.</param>
+    /// <param name="map">The mapping function.</param>
+    /// <returns>An <see cref="Option{B}"/> instance.</returns>
     public static Option<B> Map<T, B>(this Option<T> option, Func<T, B> map) => option.IsSome 
         ? Option<B>.Some(map(option.Value!)) 
         : Option<B>.None();

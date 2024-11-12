@@ -46,7 +46,17 @@ public static partial class AsyncResultExtensions
             ? Result<B>.Create(await mapFnAsync(result.Value!))
             : Result<B>.Create(result.Error!);
     }
-        
+    
+    /// <summary>
+    /// Given a successful input result, executes <paramref name="bindFn"/> function which takes unwrapped value of type A and returns a Result of type B.
+    /// It returns a new failed Result wrapping the error wrapped on the input result.
+    /// </summary>
+    /// <typeparam name="A">The type of the wrapped value from input result.</typeparam>
+    /// <typeparam name="B">The type of the output value.</typeparam>
+    /// <param name="resultTask">The input task-based result.</param>
+    /// <param name="bindFn">The binding function. This receives the unwrapped value of the input result and should output a new Result.</param>
+    /// <returns>A new Result wrapping either the outcome of <paramref name="bindFn"/> when success or the error wrapped on the input.</returns>
+    /// <exception cref="ResultUndefinedException">Thrown when the input is undefined.</exception>
     public static async Task<Result<B>> BindAsync<A, B>(this Task<Result<A>> resultTask, Func<A, Result<B>> bindFn) =>
         await resultTask.ConfigureAwait(false) switch {
             { IsUndefined: false, IsSuccess: true } result => bindFn(result.Value!),

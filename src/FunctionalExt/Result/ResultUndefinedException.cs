@@ -1,5 +1,8 @@
 namespace FunctionalExt;
 
+/// <summary>
+/// Thrown when the Result was created not via the provided static factory methods.
+/// </summary>
 public sealed class ResultUndefinedException : Exception
 {
     public ResultUndefinedException() 
