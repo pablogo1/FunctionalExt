@@ -64,5 +64,26 @@ public static partial class AsyncResultExtensions
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
 
-    
+    public static async Task<A> IfFailAsync<A>(this Result<A> result, Func<Task<A>> defaultValueAsyncFn) =>
+        result switch {
+            { IsUndefined: false, IsSuccess: true } successResult => successResult.Value!,
+            { IsUndefined: false, IsSuccess: false } => await defaultValueAsyncFn().ConfigureAwait(false),
+            { IsUndefined: true } => throw new ResultUndefinedException()
+        };
+
+    public static async Task<A> IfFailAsync<A>(this Task<Result<A>> resultTask, A defaultValue) =>
+        await resultTask.ConfigureAwait(false) switch 
+        {
+            { IsUndefined: false, IsSuccess: true } result => result.Value!,
+            { IsUndefined: false, IsSuccess: false } => defaultValue,
+            { IsUndefined: true } => throw new ResultUndefinedException()
+        };
+
+    public static async Task<A> IfFailAsync<A>(this Task<Result<A>> resultTask, Func<A> defaultValueFn) =>
+        await resultTask.ConfigureAwait(false) switch
+        {
+            { IsUndefined: false, IsSuccess: true } result => result.Value!,
+            { IsUndefined: false, IsSuccess: false } => defaultValueFn(),
+            { IsUndefined: true } => throw new ResultUndefinedException()
+        };
 }
