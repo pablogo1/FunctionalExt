@@ -2,23 +2,23 @@ namespace FunctionalExt.Tests.Result;
 
 public class BindAsyncTests
 {
-    private static async Task<Result<string>> GetStringResultAsync(string contents) 
+    private static async Task<Result<string, GenericError>> GetStringResultAsync(string contents) 
     {
         await Task.Delay(10);
-        return Result<string>.Create(contents);
+        return Result<string, GenericError>.CreateSuccess(contents);
     }
 
-    private static async Task<Result<string>> GetStringFailedResultAsync()
+    private static async Task<Result<string, GenericError>> GetStringFailedResultAsync()
     {
         await Task.Delay(10);
-        Error error = new GenericError("Code", "Error");
-        return Result<string>.Create(error);
+        var error = new GenericError("Code", "Error");
+        return Result<string, GenericError>.CreateFail(error);
     }
 
-    private static Result<string[]> Tokenize(string str) => 
+    private static Result<string[], GenericError> Tokenize(string str) => 
         string.IsNullOrWhiteSpace(str)
-            ? Result<string[]>.Create(new GenericError("EmptyError", "Empty string"))
-            : Result<string[]>.Create(str.Split(" "));
+            ? Result<string[], GenericError>.CreateFail(new GenericError("EmptyError", "Empty string"))
+            : Result<string[], GenericError>.CreateSuccess(str.Split(" "));
 
     public class TaskBasedResultAsInput_And_NotAsyncBindFn
     {

@@ -4,7 +4,7 @@ public class IfFailTests
 {
     public class GivenFaultedResult 
     {
-        private readonly Result<string> _failedResult = Result<string>.Create(new GenericError("code", "message"));
+        private readonly Result<string, GenericError> _failedResult = Result<string, GenericError>.CreateFail(new GenericError("code", "message"));
         private const string DefaultValue = "my default value";
 
         [Fact]
@@ -52,7 +52,7 @@ public class IfFailTests
         public void Should_return_wrapped_value_when_input_result_is_success()
         {
             const string defaultValue = "default";
-            var successResult = Result<string>.Create("This is a test");
+            var successResult = Result<string, GenericError>.CreateSuccess("This is a test");
             
             string actual1 = successResult.IfFail(defaultValue);
             string actual2 = successResult.IfFail(() => defaultValue);
@@ -64,7 +64,7 @@ public class IfFailTests
 
     public class GivenUndefinedResult
     {
-        private readonly Result<string> _result = new();
+        private readonly Result<string, GenericError> _result = new();
 
         [Fact]
         public void Should_throw_ResultUndefinedException()

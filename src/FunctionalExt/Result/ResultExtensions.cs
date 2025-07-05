@@ -8,26 +8,28 @@ public static partial class ResultExtensions
     /// </summary>
     /// <typeparam name="A">The type of the wrapped value from input result.</typeparam>
     /// <typeparam name="B">The type of the output value.</typeparam>
+    /// <typeparam name="TError">The type of the error wrapped in the input result.</typeparam>
     /// <param name="result">The input result.</param>
     /// <param name="mapFn">The mapping function. This receives the unwrapped value of the input result.</param>
     /// <returns>A new Result wrapping either the outcome of <paramref name="mapFn"/> when success or the error wrapped on the input.</returns>
     /// <exception cref="ResultUndefinedException">Thrown when the input result is undefined.</exception>
-    public static Result<B> Map<A, B>(this Result<A> result, Func<A, B> mapFn) => 
+    public static Result<B, TError> Map<A, B, TError>(this Result<A, TError> result, Func<A, B> mapFn) where TError : Error => 
         result.IsUndefined
             ? throw new ResultUndefinedException()
             : result.IsSuccess
-                ? Result<B>.Create(mapFn(result.Value!))
-                : Result<B>.Create(result.Error!);
+                ? Result<B, TError>.CreateSuccess(mapFn(result.Value!))
+                : Result<B, TError>.CreateFail(result.Error!);
 
     /// <summary>
     /// Map <seealso cref="ResultExtensions.Map{A, B}(Result{A}, Func{A, B})"/> for Task-based result.
     /// </summary>
     /// <typeparam name="A"></typeparam>
     /// <typeparam name="B"></typeparam>
+    /// <typeparam name="TError">The type of the error wrapped in the input result.</typeparam>
     /// <param name="resultTask">The input task-based result.</param>
     /// <param name="mapFn"></param>
     /// <returns>A task-based result of type <typeparamref name="B"/>.</returns>
-    public static async Task<Result<B>> Map<A, B>(this Task<Result<A>> resultTask, Func<A, B> mapFn) =>
+    public static async Task<Result<B, TError>> Map<A, B, TError>(this Task<Result<A, TError>> resultTask, Func<A, B> mapFn) where TError : Error =>
         (await resultTask.ConfigureAwait(false)).Map(mapFn);
 
     /// <summary>
@@ -36,16 +38,17 @@ public static partial class ResultExtensions
     /// </summary>
     /// <typeparam name="A">The type of the wrapped value from input result.</typeparam>
     /// <typeparam name="B">The type of the output value.</typeparam>
+    /// <typeparam name="TError">The type of the error wrapped in the input result.</typeparam>
     /// <param name="result">The input result.</param>
     /// <param name="bindFn">The binding function. This receives the unwrapped value of the input result and should output a new Result.</param>
     /// <returns>A new Result wrapping either the outcome of <paramref name="bindFn"/> when success or the error wrapped on the input.</returns>
     /// <exception cref="ResultUndefinedException">Thrown when the input is undefined.</exception>
-    public static Result<B> Bind<A, B>(this Result<A> result, Func<A, Result<B>> bindFn) => 
+    public static Result<B, TError> Bind<A, B, TError>(this Result<A, TError> result, Func<A, Result<B, TError>> bindFn) where TError : Error => 
         result.IsUndefined
             ? throw new ResultUndefinedException()
             : result.IsSuccess
                 ? bindFn(result.Value!)
-                : Result<B>.Create(result.Error!);
+                : Result<B, TError>.CreateFail(result.Error!);
 
     /// <summary>
     /// Returns an unwrapped value of type <typeparamref name="A"/>. If the input result is successful returns the value returned by <paramref name="succFn"/>.
@@ -53,12 +56,13 @@ public static partial class ResultExtensions
     /// </summary>
     /// <typeparam name="A">The type of the wrapped value from input result.</typeparam>
     /// <typeparam name="B">The type of the output value.</typeparam>
+    /// <typeparam name="TError">The type of the error wrapped in the input result.</typeparam>
     /// <param name="result">The input result.</param>
     /// <param name="succFn">The function executed if input is successful.</param>
     /// <param name="errFn">The function executed if input is faulted.</param>
     /// <returns>An unwrapped value of type <typeparamref name="B"/>.</returns>
     /// <exception cref="ResultUndefinedException">Thrown when the input is undefined</exception>
-    public static B Match<A, B>(this Result<A> result, Func<A, B> succFn, Func<Error, B> errFn) =>
+    public static B Match<A, B, TError>(this Result<A, TError> result, Func<A, B> succFn, Func<TError, B> errFn) where TError : Error =>
         result.IsUndefined
             ? throw new ResultUndefinedException()
             : result.IsSuccess
@@ -70,10 +74,11 @@ public static partial class ResultExtensions
     /// wrapped value.
     /// </summary>
     /// <typeparam name="A">The type of the wrapped value.</typeparam>
+    /// <typeparam name="TError">The type of the error wrapped in the input result.</typeparam>
     /// <param name="result">The input result.</param>
     /// <param name="defaultValue">The default value to return in case of faulted result.</param>
     /// <returns>An unwrapped instance of <typeparamref name="A"/>.</returns>
-    public static A IfFail<A>(this Result<A> result, A defaultValue) => 
+    public static A IfFail<A, TError>(this Result<A, TError> result, A defaultValue) where TError : Error => 
         result.IsUndefined
             ? throw new ResultUndefinedException()
             : result.IsFaulted
@@ -85,10 +90,11 @@ public static partial class ResultExtensions
     /// it returns the wrapped value.
     /// </summary>
     /// <typeparam name="A">The type of the wrapped value.</typeparam>
+    /// <typeparam name="TError">The type of the error wrapped in the input result.</typeparam>
     /// <param name="result">The input result.</param>
     /// <param name="defaultValueFn">The default value factory function.</param>
     /// <returns>An unwrapped instance of <typeparamref name="A"/>.</returns>
-    public static A IfFail<A>(this Result<A> result, Func<A> defaultValueFn) => 
+    public static A IfFail<A, TError>(this Result<A, TError> result, Func<A> defaultValueFn) where TError : Error => 
         result.IsUndefined
             ? throw new ResultUndefinedException()
             : result.IsFaulted
@@ -100,10 +106,11 @@ public static partial class ResultExtensions
     /// wrapped value.
     /// </summary>
     /// <typeparam name="A">The type of the wrapped value.</typeparam>
+    /// <typeparam name="TError">The type of the error wrapped in the input result.</typeparam>
     /// <param name="result">The input result.</param>
     /// <param name="failFn">The default value factory function.</param>
     /// <returns>An unwrapped instance of <typeparamref name="A"/>.</returns>
-    public static A IfFail<A>(this Result<A> result, Func<Error, A> failFn) => 
+    public static A IfFail<A, TError>(this Result<A, TError> result, Func<TError, A> failFn) where TError : Error => 
         result.IsUndefined
             ? throw new ResultUndefinedException()
             : result.IsFaulted
@@ -114,10 +121,11 @@ public static partial class ResultExtensions
     /// Given a faulted result, execute the <paramref name="action"/> function.
     /// </summary>
     /// <typeparam name="A">The type of the wrapped value.</typeparam>
+    /// <typeparam name="TError">The type of the error wrapped in the input result.</typeparam>
     /// <param name="result">The input result.</param>
     /// <param name="action">The action to execute.</param>
     /// <returns>The default <see cref="Unit"/> instance.</returns>
-    public static Unit IfFail<A>(this Result<A> result, Action<Error> action)
+    public static Unit IfFail<A, TError>(this Result<A, TError> result, Action<Error> action) where TError : Error
     {
         if (result.IsUndefined)
         {
