@@ -61,14 +61,35 @@ public static partial class AsyncResultExtensions
     /// <returns>A new Result wrapping either the outcome of <paramref name="bindFn"/> when success or the error wrapped on the input.</returns>
     /// <exception cref="ResultUndefinedException">Thrown when the input is undefined.</exception>
     public static async Task<Result<B, TError>> BindAsync<A, B, TError>(this Task<Result<A, TError>> resultTask, Func<A, Result<B, TError>> bindFn) where TError : Error =>
-        await resultTask.ConfigureAwait(false) switch {
+        await resultTask.ConfigureAwait(false) switch
+        {
             { IsUndefined: false, IsSuccess: true } result => bindFn(result.Value!),
             { IsUndefined: false, IsSuccess: false } result => Result<B, TError>.CreateFail(result.Error!),
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
+        
+    /// <summary>
+    /// Given a successful input result, executes <paramref name="bindAsyncFn"/> async function which takes unwrapped value of type A and returns a task-based Result of type B.
+    /// It returns a new failed Result wrapping the error wrapped on the input result.
+    /// </summary>
+    /// <typeparam name="A">The type of the wrapped value from input result.</typeparam>
+    /// <typeparam name="B">The type of the output value.</typeparam>
+    /// <typeparam name="TError">Tge type of the error wrapped in the input result.</typeparam>
+    /// <param name="resultTask">The input task-based result.</param>
+    /// <param name="bindAsyncFn">The binding function. This receives the unwrapped value of the input result and should output a new Result.</param>
+    /// <returns>A new Result wrapping either the outcome of <paramref name="bindAsyncFn"/> when success or the error wrapped on the input.</returns>
+    /// <exception cref="ResultUndefinedException">Thrown when the input is undefined.</exception>
+    public static async Task<Result<B, TError>> BindAsync<A, B, TError>(this Task<Result<A, TError>> resultTask, Func<A, Task<Result<B, TError>>> bindAsyncFn) where TError : Error =>
+        await resultTask.ConfigureAwait(false) switch
+        {
+            { IsUndefined: false, IsSuccess: true } successResult => await bindAsyncFn(successResult.Value!).ConfigureAwait(false),
+            { IsUndefined: false, IsSuccess: false } faultedResult => Result<B, TError>.CreateFail(faultedResult.Error!),
+            { IsUndefined: true } => throw new ResultUndefinedException()
+        };
 
     public static async Task<A> IfFailAsync<A, TError>(this Result<A, TError> result, Func<Task<A>> defaultValueAsyncFn) where TError : Error =>
-        result switch {
+        result switch
+        {
             { IsUndefined: false, IsSuccess: true } successResult => successResult.Value!,
             { IsUndefined: false, IsSuccess: false } => await defaultValueAsyncFn().ConfigureAwait(false),
             { IsUndefined: true } => throw new ResultUndefinedException()
