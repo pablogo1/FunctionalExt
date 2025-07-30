@@ -87,6 +87,16 @@ public static partial class AsyncResultExtensions
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
 
+    /// <summary>
+    /// Returns an unwrapped value of type <typeparamref name="A"/>. If the input result is not successful, it returns the value returned by <paramref name="defaultValueAsyncFn"/>.
+    /// Otherwise, returns the value wrapped in the input result.
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="defaultValueAsyncFn"></param>
+    /// <returns>The unwrapped value of the input result, using the default value function to generate a value in case the result is faulted.</returns>
+    /// <exception cref="ResultUndefinedException"></exception>
     public static async Task<A> IfFailAsync<A, TError>(this Result<A, TError> result, Func<Task<A>> defaultValueAsyncFn) where TError : Error =>
         result switch
         {
@@ -95,6 +105,16 @@ public static partial class AsyncResultExtensions
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
 
+    /// <summary>
+    /// Returns an unwrapped value of type <typeparamref name="A"/>. If the input result is not successful, it returns the <paramref name="defaultValue"/>.
+    /// Otherwise, returns the value wrapped in the input result.
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="resultTask"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns>The unwrapped value of the input result, using the default value provided in case the result is faulted.</returns>
+    /// <exception cref="ResultUndefinedException"></exception>
     public static async Task<A> IfFailAsync<A, TError>(this Task<Result<A, TError>> resultTask, A defaultValue) where TError : Error =>
         await resultTask.ConfigureAwait(false) switch
         {
@@ -103,11 +123,39 @@ public static partial class AsyncResultExtensions
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
 
+    /// <summary>
+    /// Returns an unwrapped value of type <typeparamref name="A"/>. If the input result is not successful, it returns the value returned by <paramref name="defaultValueFn"/>.
+    /// Otherwise, returns the value wrapped in the input result.
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="resultTask"></param>
+    /// <param name="defaultValueFn"></param>
+    /// <returns>The unwrapped value of the input result, using the default value function to generate a value in case the result is faulted</returns>
+    /// <exception cref="ResultUndefinedException"></exception>
     public static async Task<A> IfFailAsync<A, TError>(this Task<Result<A, TError>> resultTask, Func<A> defaultValueFn) where TError : Error =>
         await resultTask.ConfigureAwait(false) switch
         {
             { IsUndefined: false, IsSuccess: true } result => result.Value!,
             { IsUndefined: false, IsSuccess: false } => defaultValueFn(),
+            { IsUndefined: true } => throw new ResultUndefinedException()
+        };
+
+    /// <summary>
+    /// Returns an unwrapped value of type <typeparamref name="A"/>. If the input result is not successful, it returns the value returned by <paramref name="defaultValueAsyncFn"/>.
+    /// Otherwise, returns the value wrapped in the input result.
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="resultTask"></param>
+    /// <param name="defaultValueAsyncFn"></param>
+    /// <returns>The unwrapped value of the input result, using the default value function to generate a value in case the result is faulted.</returns>
+    /// <exception cref="ResultUndefinedException"></exception>
+    public static async Task<A> IfFailAsync<A, TError>(this Task<Result<A, TError>> resultTask, Func<Task<A>> defaultValueAsyncFn) where TError : Error =>
+        await resultTask.ConfigureAwait(false) switch
+        {
+            { IsUndefined: false, IsSuccess: true } result => result.Value!,
+            { IsUndefined: false, IsSuccess: false } => await defaultValueAsyncFn().ConfigureAwait(false),
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
 
