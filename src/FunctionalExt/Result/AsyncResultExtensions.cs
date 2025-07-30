@@ -48,7 +48,7 @@ public static partial class AsyncResultExtensions
             ? Result<B, TError>.CreateSuccess(await mapFnAsync(result.Value!))
             : Result<B, TError>.CreateFail(result.Error!);
     }
-    
+
     /// <summary>
     /// Given a successful input result, executes <paramref name="bindFn"/> function which takes unwrapped value of type A and returns a Result of type B.
     /// It returns a new failed Result wrapping the error wrapped on the input result.
@@ -67,7 +67,7 @@ public static partial class AsyncResultExtensions
             { IsUndefined: false, IsSuccess: false } result => Result<B, TError>.CreateFail(result.Error!),
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
-        
+
     /// <summary>
     /// Given a successful input result, executes <paramref name="bindAsyncFn"/> async function which takes unwrapped value of type A and returns a task-based Result of type B.
     /// It returns a new failed Result wrapping the error wrapped on the input result.
@@ -96,7 +96,7 @@ public static partial class AsyncResultExtensions
         };
 
     public static async Task<A> IfFailAsync<A, TError>(this Task<Result<A, TError>> resultTask, A defaultValue) where TError : Error =>
-        await resultTask.ConfigureAwait(false) switch 
+        await resultTask.ConfigureAwait(false) switch
         {
             { IsUndefined: false, IsSuccess: true } result => result.Value!,
             { IsUndefined: false, IsSuccess: false } => defaultValue,
@@ -108,6 +108,22 @@ public static partial class AsyncResultExtensions
         {
             { IsUndefined: false, IsSuccess: true } result => result.Value!,
             { IsUndefined: false, IsSuccess: false } => defaultValueFn(),
+            { IsUndefined: true } => throw new ResultUndefinedException()
+        };
+
+    public static async Task<B> MatchAsync<A, B, TError>(this Task<Result<A, TError>> resultTask, Func<A, Task<B>> succFn, Func<TError, Task<B>> errFn) where TError : Error =>
+        await resultTask.ConfigureAwait(false) switch
+        {
+            { IsUndefined: false, IsSuccess: true } result => await succFn(result.Value!).ConfigureAwait(false),
+            { IsUndefined: false, IsSuccess: false } result => await errFn(result.Error!).ConfigureAwait(false),
+            { IsUndefined: true } => throw new ResultUndefinedException()
+        };
+
+    public static async Task<B> MatchAsync<A, B, TError>(this Result<A, TError> result, Func<A, Task<B>> succFn, Func<TError, Task<B>> errFn) where TError : Error =>
+        result switch
+        {
+            { IsUndefined: false, IsSuccess: true } => await succFn(result.Value!).ConfigureAwait(false),
+            { IsUndefined: false, IsSuccess: false } => await errFn(result.Error!).ConfigureAwait(false),
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
 }
