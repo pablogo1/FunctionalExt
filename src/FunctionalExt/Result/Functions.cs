@@ -64,4 +64,51 @@ public static partial class Functions
             return Fail<T, ExceptionalError>(new ExceptionalError(ex));
         }
     }
+
+    /// <summary>
+    /// Combines two results into one result containing a tuple of their values if both are successful.
+    /// If either result is a failure, returns the first encountered failure.
+    /// </summary>
+    /// <typeparam name="T1">The type of the first result wrapped value.</typeparam>
+    /// <typeparam name="T2">The type of the second result wrapped value.</typeparam>
+    /// <typeparam name="TError">The type of the error shared across all the results.</typeparam>
+    /// <param name="r1">The first result.</param>
+    /// <param name="r2">The second result.</param>
+    /// <returns>A single result wrapping a tuple containing the values wrapped in the input results.</returns>
+    public static Result<(T1, T2), TError> Combine<T1, T2, TError>(Result<T1, TError> r1, Result<T2, TError> r2)
+        where TError : Error
+    {
+        return (r1.IsSuccess, r2.IsSuccess) switch
+        {
+            (false, _) => Fail<(T1, T2), TError>(r1.Error!),
+            (_, false) => Fail<(T1, T2), TError>(r2.Error!),
+            _ => Success<(T1, T2), TError>((r1.Value!, r2.Value!))
+        };
+    }
+
+    public static Result<(T1, T2, T3), TError> Combine<T1, T2, T3, TError>(Result<T1, TError> r1, Result<T2, TError> r2, Result<T3, TError> r3)
+        where TError : Error
+    {
+        return (r1.IsSuccess, r2.IsSuccess, r3.IsSuccess) switch
+        {
+            (false, _, _) => Fail<(T1, T2, T3), TError>(r1.Error!),
+            (_, false, _) => Fail<(T1, T2, T3), TError>(r2.Error!),
+            (_, _, false) => Fail<(T1, T2, T3), TError>(r3.Error!),
+            _ => Success<(T1, T2, T3), TError>((r1.Value!, r2.Value!, r3.Value!))
+        };
+    }
+
+    public static Result<(T1, T2, T3, T4), TError> Combine<T1, T2, T3, T4, TError>(Result<T1, TError> r1, Result<T2, TError> r2, Result<T3, TError> r3, Result<T4, TError> r4)
+        where TError : Error
+    {
+        return (r1.IsSuccess, r2.IsSuccess, r3.IsSuccess, r4.IsSuccess) switch
+        {
+            (false, _, _, _) => Fail<(T1, T2, T3, T4), TError>(r1.Error!),
+            (_, false, _, _) => Fail<(T1, T2, T3, T4), TError>(r2.Error!),
+            (_, _, false, _) => Fail<(T1, T2, T3, T4), TError>(r3.Error!),
+            (_, _, _, false) => Fail<(T1, T2, T3, T4), TError>(r4.Error!),
+            _ => Success<(T1, T2, T3, T4), TError>((r1.Value!, r2.Value!, r3.Value!, r4.Value!))
+        };
+    }
+
 }
