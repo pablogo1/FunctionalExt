@@ -159,19 +159,19 @@ public static partial class AsyncResultExtensions
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
 
-    public static async Task<B> MatchAsync<A, B, TError>(this Task<Result<A, TError>> resultTask, Func<A, Task<B>> succFn, Func<TError, Task<B>> errFn) where TError : Error =>
+    public static async Task<B> MatchAsync<A, B, TError>(this Task<Result<A, TError>> resultTask, Func<A, Task<B>> success, Func<TError, Task<B>> error) where TError : Error =>
         await resultTask.ConfigureAwait(false) switch
         {
-            { IsUndefined: false, IsSuccess: true } result => await succFn(result.Value!).ConfigureAwait(false),
-            { IsUndefined: false, IsSuccess: false } result => await errFn(result.Error!).ConfigureAwait(false),
+            { IsUndefined: false, IsSuccess: true } result => await success(result.Value!).ConfigureAwait(false),
+            { IsUndefined: false, IsSuccess: false } result => await error(result.Error!).ConfigureAwait(false),
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
 
-    public static async Task<B> MatchAsync<A, B, TError>(this Result<A, TError> result, Func<A, Task<B>> succFn, Func<TError, Task<B>> errFn) where TError : Error =>
+    public static async Task<B> MatchAsync<A, B, TError>(this Result<A, TError> result, Func<A, Task<B>> success, Func<TError, Task<B>> error) where TError : Error =>
         result switch
         {
-            { IsUndefined: false, IsSuccess: true } => await succFn(result.Value!).ConfigureAwait(false),
-            { IsUndefined: false, IsSuccess: false } => await errFn(result.Error!).ConfigureAwait(false),
+            { IsUndefined: false, IsSuccess: true } => await success(result.Value!).ConfigureAwait(false),
+            { IsUndefined: false, IsSuccess: false } => await error(result.Error!).ConfigureAwait(false),
             { IsUndefined: true } => throw new ResultUndefinedException()
         };
 }

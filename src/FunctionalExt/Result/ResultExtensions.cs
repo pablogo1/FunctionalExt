@@ -51,23 +51,23 @@ public static partial class ResultExtensions
                 : Result<B, TError>.CreateFail(result.Error!);
 
     /// <summary>
-    /// Returns an unwrapped value of type <typeparamref name="A"/>. If the input result is successful returns the value returned by <paramref name="succFn"/>.
-    /// Otherwise, returns the value returned by <paramref name="errFn"/>.
+    /// Returns an unwrapped value of type <typeparamref name="A"/>. If the input result is successful returns the value returned by <paramref name="success"/>.
+    /// Otherwise, returns the value returned by <paramref name="error"/>.
     /// </summary>
     /// <typeparam name="A">The type of the wrapped value from input result.</typeparam>
     /// <typeparam name="B">The type of the output value.</typeparam>
     /// <typeparam name="TError">The type of the error wrapped in the input result.</typeparam>
     /// <param name="result">The input result.</param>
-    /// <param name="succFn">The function executed if input is successful.</param>
-    /// <param name="errFn">The function executed if input is faulted.</param>
+    /// <param name="success">The function executed if input is successful.</param>
+    /// <param name="error">The function executed if input is faulted.</param>
     /// <returns>An unwrapped value of type <typeparamref name="B"/>.</returns>
     /// <exception cref="ResultUndefinedException">Thrown when the input is undefined</exception>
-    public static B Match<A, B, TError>(this Result<A, TError> result, Func<A, B> succFn, Func<TError, B> errFn) where TError : Error =>
+    public static B Match<A, B, TError>(this Result<A, TError> result, Func<A, B> success, Func<TError, B> error) where TError : Error =>
         result.IsUndefined
             ? throw new ResultUndefinedException()
             : result.IsSuccess
-                ? succFn(result.Value!)
-                : errFn(result.Error!);
+                ? success(result.Value!)
+                : error(result.Error!);
 
     /// <summary>
     /// Given a faulted error, return the <paramref name="defaultValue"/>. Otherwise, it returns the
