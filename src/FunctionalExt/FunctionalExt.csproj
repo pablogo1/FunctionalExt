@@ -18,10 +18,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="../../README.md">
+    <None Include="../../README.md">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
