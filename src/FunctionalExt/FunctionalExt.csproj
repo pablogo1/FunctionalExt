@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>PG.FunctionalExt</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Authors>Pablo Gonzalez</Authors>
     <Product>PG.FunctionalExt</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>

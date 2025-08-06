@@ -1,4 +1,4 @@
-namespace FunctionalExt.Tests.Option.FunctionalHelper;
+namespace FunctionalExt.Tests.Option;
 
 using static FunctionalExt.Functions;
 
