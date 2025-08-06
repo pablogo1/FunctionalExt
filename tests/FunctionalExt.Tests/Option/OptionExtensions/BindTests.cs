@@ -1,13 +1,13 @@
-namespace FunctionalExt.Tests;
+namespace FunctionalExt.Tests.Option;
 
 using static Functions;
 
 public class BindTests
 {
     [Fact]
-    public void Should_return_Option_returned_by_fuction_given_Some()
+    public void Should_return_Option_returned_by_function_given_Some()
     {
-        Option<double> SafeDivision(double a, double b) => b == 0 ? None<double>() : Some(a / b);
+        static Option<double> SafeDivision(double a, double b) => b == 0 ? None<double>() : Some(a / b);
 
         Option<double> option = Some(10.0);
 
@@ -26,7 +26,7 @@ public class BindTests
     {
         Option<string> option = None<string>();
 
-        var result = option.Bind(str => Some(str.Length)); 
+        var result = option.Bind(str => Some(str.Length));
 
         result.Should().BeOfType<Option<int>>();
         result.IsSome.Should().BeFalse();

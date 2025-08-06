@@ -1,4 +1,4 @@
-namespace FunctionalExt.Tests;
+namespace FunctionalExt.Tests.Option;
 
 using static Functions;
 

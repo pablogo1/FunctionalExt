@@ -4,7 +4,7 @@ public static partial class ResultExtensions
 {
     /// <summary>
     /// Given a successful input result, executes <paramref name="mapFn"/> function which maps wrapped instance of type A into an instance of type B
-    /// and wraps it into a successful result. It returns a new failed <see cref="Result{B}"/> wrapping the error contained on the input result.
+    /// and wraps it into a successful result. It returns a new failed <see cref="Result{B, TError}"/> wrapping the error contained on the input result.
     /// </summary>
     /// <typeparam name="A">The type of the wrapped value from input result.</typeparam>
     /// <typeparam name="B">The type of the output value.</typeparam>
@@ -21,7 +21,7 @@ public static partial class ResultExtensions
                 : Result<B, TError>.CreateFail(result.Error!);
 
     /// <summary>
-    /// Map <seealso cref="ResultExtensions.Map{A, B}(Result{A}, Func{A, B})"/> for Task-based result.
+    /// Map <seealso cref="ResultExtensions.Map{A, B, TError}(Result{A, TError}, Func{A, B})"/> for Task-based result.
     /// </summary>
     /// <typeparam name="A"></typeparam>
     /// <typeparam name="B"></typeparam>

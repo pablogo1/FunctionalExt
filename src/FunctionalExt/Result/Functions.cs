@@ -15,7 +15,7 @@ public static partial class Functions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TError"></typeparam>
-    /// <param name="error"The rror.></param>
+    /// <param name="error">The error.></param>
     /// <returns>A failed Result instance.</returns>
     public static Result<T, TError> Fail<T, TError>(TError error) where TError : Error
         => Result<T, TError>.CreateFail(error);

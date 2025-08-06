@@ -2,9 +2,10 @@
 
 /// <summary>
 /// The Result monad. This can be either a successful result, which wraps the value, or a failed result which
-/// wraps an <seealso cref="Error"/> instance.
+/// wraps an <seealso cref="FunctionalExt.Error"/> instance.
 /// </summary>
 /// <typeparam name="A">The type of the wrapped value.</typeparam>
+/// <typeparam name="TError">The type of the wrapped error. The error type must inherit from <see cref="FunctionalExt.Error"/> base type.</typeparam>
 public readonly record struct Result<A, TError>
     where TError : Error
 {
