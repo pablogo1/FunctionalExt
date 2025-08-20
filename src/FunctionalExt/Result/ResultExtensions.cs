@@ -31,6 +31,23 @@ public static partial class ResultExtensions
     /// <returns>A task-based result of type <typeparamref name="B"/>.</returns>
     public static async Task<Result<B, TError>> Map<A, B, TError>(this Task<Result<A, TError>> resultTask, Func<A, B> mapFn) where TError : Error =>
         (await resultTask.ConfigureAwait(false)).Map(mapFn);
+        
+    /// <summary>
+    /// Given a failed input result, executes <paramref name="mapErrorFn"/> function which maps the error of type TErrorA into an error of type TErrorB
+    /// and wraps it into a failed result. It returns a new successful <see cref="Result{A, TErrorB}"/> wrapping the value contained on the input result.
+    /// </summary>
+    public static Result<A, TErrorB> MapError<A, TErrorA, TErrorB>(this Result<A, TErrorA> result, Func<TErrorA, TErrorB> mapErrorFn) where TErrorA : Error where TErrorB : Error =>
+        result.IsUndefined
+            ? throw new ResultUndefinedException()
+            : result.IsSuccess
+                ? Result<A, TErrorB>.CreateSuccess(result.Value!)
+                : Result<A, TErrorB>.CreateFail(mapErrorFn(result.Error!));
+
+    /// <summary>
+    /// Map <seealso cref="ResultExtensions.MapError{A, TErrorA, TErrorB}(Result{A, TErrorA}, Func{TErrorA, TErrorB})"/> for Task-based result.
+    /// </summary>
+    public static async Task<Result<A, TErrorB>> MapError<A, TErrorA, TErrorB>(this Task<Result<A, TErrorA>> resultTask, Func<TErrorA, TErrorB> mapErrorFn) where TErrorA : Error where TErrorB : Error =>
+        (await resultTask.ConfigureAwait(false)).MapError(mapErrorFn);
 
     /// <summary>
     /// Given a successful input result, executes <paramref name="bindFn"/> function which takes unwrapped value of type A and returns a Result of type B.
@@ -43,7 +60,7 @@ public static partial class ResultExtensions
     /// <param name="bindFn">The binding function. This receives the unwrapped value of the input result and should output a new Result.</param>
     /// <returns>A new Result wrapping either the outcome of <paramref name="bindFn"/> when success or the error wrapped on the input.</returns>
     /// <exception cref="ResultUndefinedException">Thrown when the input is undefined.</exception>
-    public static Result<B, TError> Bind<A, B, TError>(this Result<A, TError> result, Func<A, Result<B, TError>> bindFn) where TError : Error => 
+    public static Result<B, TError> Bind<A, B, TError>(this Result<A, TError> result, Func<A, Result<B, TError>> bindFn) where TError : Error =>
         result.IsUndefined
             ? throw new ResultUndefinedException()
             : result.IsSuccess
